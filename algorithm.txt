@@ -1,0 +1,53 @@
+Trong đoạn code dự đoán giá cổ phiếu, các thuật toán và phương pháp được sử dụng bao gồm:
+1. **Transformers:** Mô hình Transformer được sử dụng để học cấu trúc dữ liệu chuỗi thời gian và dự đoán giá cổ phiếu trong tương lai. 
+Mô hình Transformer là một kiến trúc mạng nơ-ron trích xuất đặc trưng từ chuỗi thời gian và áp dụng các lớp self-attention để hiểu mối quan hệ không gian và thời gian giữa các điểm dữ liệu.
+2. **Scaled Exponentially-Regularized Linear Unit (SERLU):** Một hàm kích hoạt phi tuyến tính được thiết kế để được sử dụng trong mô hình Transformer. 
+Tuy nhiên, đoạn code này đã được bình luận và không được sử dụng trong quá trình huấn luyện.
+3. **Min-Max Scaling:** Dữ liệu giá cổ phiếu được chuẩn hóa bằng cách chia tỷ lệ giá trị của chúng vào một khoảng xác định (thông thường từ 0 đến 1) để đảm bảo rằng các giá trị đầu vào có cùng phạm vi.
+4. **LSTM (Long Short-Term Memory):** Một loại mạng nơ-ron hồi tiếp được sử dụng để học và dự đoán các mẫu trong chuỗi thời gian. 
+Tuy nhiên, trong đoạn mã bạn cung cấp, không có sử dụng trực tiếp LSTM mà là mô hình Transformer.
+5. **Optimization Algorithms:** Thuật toán tối ưu hóa Adam được sử dụng để điều chỉnh trọng số của mạng nơ-ron và giảm thiểu hàm mất mát trong quá trình huấn luyện.
+6. **Loss Function:** Hàm mất mát được sử dụng để đánh giá sự khác biệt giữa giá dự đoán và giá thực tế của cổ phiếu. 
+Trong đoạn mã này, hàm mất mát là Mean Squared Error (MSE), tức là trung bình bình phương của sự sai lệch giữa giá dự đoán và giá thực tế.
+
+
+
+Các đoạn mã trong ví dụ của bạn thực hiện xử lý dữ liệu từ tập dữ liệu cổ phiếu AAPL, trong đó một số đoạn mã xử lý dữ liệu được trích dẫn như sau:
+
+1. **Đọc dữ liệu từ tập tin CSV**:
+```python
+stock = pd.read_csv('AAPL.csv')
+```
+
+2. **Xử lý cột ngày thành định dạng datetime**:
+```python
+stock['DateTime'] = pd.to_datetime(stock['Date'])
+```
+
+3. **Chọn cột dữ liệu cần phân tích**:
+```python
+training_set = stock[train_start_date:train_end_date].iloc[:,3:4].values 
+test_set = stock[test_start_date:].iloc[:,3:4].values
+```
+
+4. **Chuẩn hóa dữ liệu**:
+```python
+sc = MinMaxScaler(feature_range=(0,1))
+training_set_scaled = sc.fit_transform(training_set)
+```
+
+5. **Chia dữ liệu thành các cửa sổ thời gian**:
+```python
+x_train = []
+y_train = []
+for i in range(timesteps, training_set.shape[0]):
+    x_train.append(training_set_scaled[i-timesteps:i, 0])
+    y_train.append(training_set_scaled[i, 0])
+```
+
+6. **Reshape dữ liệu để phù hợp với mạng nơ-ron**:
+```python
+x_train = np.array(x_train)
+y_train = np.array(y_train)
+x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
+```
